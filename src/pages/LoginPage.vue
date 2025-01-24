@@ -1,0 +1,66 @@
+<template>
+  <div class="flex flex-col min-h-screen">
+    <NavBar />
+    <div class="flex items-center justify-center flex-grow">
+      <div class="max-w-md p-6 bg-[#F5F5F5] rounded-lg shadow-sm shadow-gray-600">
+        <h1 class="mx-auto text-center">Вход</h1>
+        <form @submit.prevent>
+          <MyInput v-model="loginCredentials.login" placeholder="email" type="email" class="w-full p-2 mt-6 ">
+          </MyInput>
+          <MyInput v-model="loginCredentials.password" placeholder="Пароль" type="password" class="w-full p-2 mt-6 ">
+          </MyInput>
+          <MyButton @click="login" class="w-full p-2 mt-6">Вход</MyButton>
+        </form>
+        <div class="mt-2">
+          Нет аккаунта? <RouterLink class="text-blue-700" to="/registration">Зарегистрироваться</RouterLink>
+        </div>
+      </div>
+    </div>
+    <HinkalFooter />
+  </div>
+</template>
+
+<script setup>
+import HinkalFooter from '@/components/HinkalFooter.vue';
+import NavBar from '@/components/NavBar.vue';
+import axios from 'axios';
+import { useAuthStore } from "@/stores/authStore.js";
+import { reactive } from 'vue';
+import router from '@/router';
+
+const loginCredentials = reactive({
+  login: '',
+  password: '',
+});
+
+const authStore = useAuthStore();
+
+async function login() {
+  try {
+    const response = await axios.post("http://localhost:8080/api/login", loginCredentials, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (response.status === 200) {
+      const result = response.data;
+      console.log("Вы успешно авторизовались:", result);
+
+      authStore.setCredentials({
+        name: result.name,
+        email: result.email,
+        phone: result.phone
+      });
+
+      router.push('/');
+    } else {
+      alert('Проверьте правильность логина или пароля')
+      throw new Error(`Ошибка HTTP: ${response.status}`);
+    }
+  } catch (error) {
+    alert('Проверьте правильность логина или пароля')
+    console.error(`Ошибка HTTP: ${error.response?.status || error.message}`);
+  }
+}
+</script>

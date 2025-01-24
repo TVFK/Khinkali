@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1 {
+    @apply text-3xl font-medium text-orange-500;
+  }
+  .bg-pattern {
+    background-image: url('/pattern.png'), linear-gradient(to right, #f5f5dc 0%, #faebd7 100%);
+    background-size: contain;
+  }
+}
