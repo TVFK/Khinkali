@@ -23,25 +23,28 @@
         +
       </MyButton>
     </div>
-    <MyButton @click="cartStore.addCardToCart(card, quantity)"
+    <MyButton @click="cartStore.addCardToCart({ ...card, price: card.newPrice, quantity: 0 }, quantity)"
       class="py-3 mt-4 font-bold text-white uppercase bg-blue-600 rounded px-7 hover:bg-blue-700">
       + в корзину
     </MyButton>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
 
 const cartStore = useCartStore();
 
-defineProps({
+defineProps<{
   card: {
-    type: Object,
-    required: true
-  }
-});
+    id: number;
+    title: string;
+    oldPrice: number;
+    newPrice: number;
+    image: string;
+  };
+}>();
 
 const quantity = ref(1);
 
@@ -50,5 +53,4 @@ function decrement() {
     quantity.value--;
   }
 }
-
 </script>

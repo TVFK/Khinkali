@@ -21,23 +21,24 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
+import MyInput from './MyInput.vue';
+import MyButton from './MyButton.vue';
 
-const phoneNumber = ref("");
+const phoneNumber = ref<string>("");
 
-defineProps({
-  isVisible: {
-    type: Boolean,
-    required: true,
-  },
-})
+defineProps<{
+  isVisible: boolean;
+}>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits<{
+  (e: 'close'): void;
+}>();
 
 function closeModal() {
-  emit('close')
-};
+  emit('close');
+}
 
 function submitForm() {
   alert(
@@ -45,6 +46,5 @@ function submitForm() {
   );
   closeModal();
   phoneNumber.value = "";
-};
-
+}
 </script>

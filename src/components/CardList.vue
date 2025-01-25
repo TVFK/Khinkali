@@ -4,13 +4,16 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CardItem from './CardItem.vue';
 
-defineProps({
+defineProps<{
   cards: {
-    type: Array,
-    required: true
-  }
-});
+    id: number;
+    title: string;
+    oldPrice: number;
+    newPrice: number;
+    image: string;
+  }[];
+}>();
 </script>

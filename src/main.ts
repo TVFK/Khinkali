@@ -11,11 +11,11 @@ import directives from './directives'
 const app = createApp(App)
 
 directives.forEach((directive) => {
-  app.directive(directive.name, directive)
+  app.directive('focus', directive)
 })
 
 components.forEach((component) => {
-  app.component(component.name, component)
+  app.component(component.name, component.component)
 })
 
 app.use(createPinia())

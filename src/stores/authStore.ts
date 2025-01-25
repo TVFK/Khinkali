@@ -1,9 +1,15 @@
 import { defineStore } from 'pinia'
 import { reactive, ref, onMounted, watch } from 'vue'
 
+export interface PersonCredentials {
+  name: string
+  email: string
+  phone: string
+}
+
 export const useAuthStore = defineStore('authStore', () => {
   const isAuth = ref(false)
-  const personCredentials = reactive({
+  const personCredentials = reactive<PersonCredentials>({
     name: '',
     email: '',
     phone: '',
@@ -19,13 +25,9 @@ export const useAuthStore = defineStore('authStore', () => {
     saveToLocalStorage()
   }
 
-  function setCredentials(person) {
+  function setCredentials(person: PersonCredentials) {
     isAuth.value = true
-    Object.assign(personCredentials, {
-      name: person.name,
-      email: person.email,
-      phone: person.phone,
-    })
+    Object.assign(personCredentials, person)
     saveToLocalStorage()
   }
 
@@ -40,7 +42,7 @@ export const useAuthStore = defineStore('authStore', () => {
   }
 
   function loadFromLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('authStore'))
+    const data = JSON.parse(localStorage.getItem('authStore') || 'null')
     if (data) {
       isAuth.value = data.isAuth
       Object.assign(personCredentials, data.personCredentials)

@@ -85,14 +85,15 @@
   <HinkalFooter />
 </template>
 
-<script setup>
-import HinkalFooter from '@/components/HinkalFooter.vue';
-import NavBar from '@/components/NavBar.vue';
+<script setup lang="ts">
+import HinkalFooter from '../components/HinkalFooter.vue';
+import NavBar from '../components/NavBar.vue';
 import axios from 'axios';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
 const registrationCredentials = reactive({
   name: '',
   email: '',
@@ -100,29 +101,28 @@ const registrationCredentials = reactive({
   password: '',
   confirmPassword: '',
   gender: '',
-  avatar: null,
+  avatar: null as File | null,
   source: '',
   termsAccepted: false,
 });
 
+
 async function register() {
-  console.log("REGISTRATION IN PROCESS");
   try {
     const response = await axios.post("http://localhost:8080/api/register", registrationCredentials, {
-      headers: {
-        "Content-Type": "application/json"
-      }
+      headers: { "Content-Type": "application/json" },
     });
 
     if (response.status === 201) {
-      console.log('Регистрация прошла успешно!' + response.data);
+      console.log('Регистрация прошла успешно!', response.data);
       router.push('/login');
     } else {
-      alert('что-то пошло не так')
-      console.log("Что-то пошло не так" + response);
+      alert('Что-то пошло не так');
+      console.error("Что-то пошло не так", response);
     }
   } catch (error) {
-    console.error(`Ошибка HTTP: ${error.response?.status || error.message}`);
+    console.error(`Ошибка HTTP: ${(error as any).response?.status || (error as Error).message}`);
   }
 }
+
 </script>

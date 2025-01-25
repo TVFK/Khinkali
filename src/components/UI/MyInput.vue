@@ -3,18 +3,21 @@
     class="border border-gray-400 rounded-md focus:outline-none focus:ring-2" type="text">
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineOptions({
   name: 'MyInput',
 });
 
-defineProps({
-  modelValue: [String, Number],
-});
+defineProps<{
+  modelValue: string | number;
+}>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string | number): void;
+}>();
 
-function updateInput(event) {
-  emit('update:modelValue', event.target.value);
+function updateInput(event: Event) {
+  const target = event.target as HTMLInputElement;
+  emit('update:modelValue', target.value);
 }
 </script>

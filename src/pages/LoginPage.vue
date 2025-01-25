@@ -20,11 +20,11 @@
   </div>
 </template>
 
-<script setup>
-import HinkalFooter from '@/components/HinkalFooter.vue';
-import NavBar from '@/components/NavBar.vue';
+<script setup lang="ts">
+import HinkalFooter from '../components/HinkalFooter.vue';
+import NavBar from '../components/NavBar.vue';
 import axios from 'axios';
-import { useAuthStore } from "@/stores/authStore.js";
+import { useAuthStore, type PersonCredentials } from "@/stores/authStore.js";
 import { reactive } from 'vue';
 import router from '@/router';
 
@@ -38,29 +38,23 @@ const authStore = useAuthStore();
 async function login() {
   try {
     const response = await axios.post("http://localhost:8080/api/login", loginCredentials, {
-      headers: {
-        "Content-Type": "application/json"
-      }
+      headers: { "Content-Type": "application/json" },
     });
 
     if (response.status === 200) {
-      const result = response.data;
+      const result: PersonCredentials = response.data;
       console.log("Вы успешно авторизовались:", result);
 
-      authStore.setCredentials({
-        name: result.name,
-        email: result.email,
-        phone: result.phone
-      });
-
+      authStore.setCredentials(result);
       router.push('/');
     } else {
-      alert('Проверьте правильность логина или пароля')
+      alert('Проверьте правильность логина или пароля');
       throw new Error(`Ошибка HTTP: ${response.status}`);
     }
   } catch (error) {
-    alert('Проверьте правильность логина или пароля')
-    console.error(`Ошибка HTTP: ${error.response?.status || error.message}`);
+    alert('Проверьте правильность логина или пароля');
+    console.error(`Ошибка HTTP: ${(error as any).response?.status || (error as Error).message}`);
   }
 }
+
 </script>

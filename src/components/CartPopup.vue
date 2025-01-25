@@ -54,15 +54,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { useCartStore } from "@/stores/cartStore";
 
 const cartStore = useCartStore();
 const router = useRouter();
-const emit = defineEmits(["close"]);
+const emit = defineEmits<{
+  (e: "close"): void;
+}>();
 
-function checkout() {
+function checkout(): void {
   if (!cartStore.isEmpty()) {
     router.push("/order");
   } else {

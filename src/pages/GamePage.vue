@@ -39,11 +39,11 @@
   <HinkalFooter />
 </template>
 
-<script setup>
-import HinkalFooter from '@/components/HinkalFooter.vue';
-import NavBar from '@/components/NavBar.vue';
+<script setup lang="ts">
+import HinkalFooter from '../components/HinkalFooter.vue';
+import NavBar from '../components/NavBar.vue';
 
-function handleClick(type) {
+function handleClick(type: string) {
   if (type === "cheese") {
     alert("Поздравляем! Вот ваш промокод - E1L7DL92OEQ !");
   } else if (type === "sheepmeat" || type === "meat") {

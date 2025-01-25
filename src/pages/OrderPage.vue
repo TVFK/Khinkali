@@ -119,51 +119,56 @@
   <HinkalFooter />
 </template>
 
-<script setup>
-import HinkalFooter from '@/components/HinkalFooter.vue';
-import NavBar from '@/components/NavBar.vue';
-import { useAuthStore } from "@/stores/authStore";
-import { useCartStore } from "@/stores/cartStore";
+<script lang="ts" setup>
+import { ref, computed } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
 import axios from 'axios';
-import { reactive, computed } from 'vue';
+import type { Order } from '../types/order';
+import HinkalFooter from '../components/HinkalFooter.vue';
+import NavBar from '../components/NavBar.vue';
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
+
 const person = authStore.personCredentials;
 const totalAmount = cartStore.totalAmount;
-const address = reactive({
+
+const address = ref({
   street: '',
   house: '',
   floor: '',
   apartment: '',
 });
 
-const order = reactive({
+const order: Order = {
   name: person.name,
   email: person.email,
   phone: person.phone,
   address: computed(() => {
     const parts = [
-      address.street,
-      address.house ? `д. ${address.house}` : '',
-      address.floor ? `эт. ${address.floor}` : '',
-      address.apartment ? `кв./офис ${address.apartment}` : '',
+      address.value.street,
+      address.value.house ? `д. ${address.value.house}` : '',
+      address.value.floor ? `эт. ${address.value.floor}` : '',
+      address.value.apartment ? `кв./офис ${address.value.apartment}` : '',
     ];
     return parts.filter(part => part).join(', ');
-  }),
+  }).value, // Преобразуем в строку
   deliveryASAP: true,
   deliveryDate: null,
   paymentMethod: 'cash',
   comments: '',
   amount: totalAmount,
-  orderItemsList: cartStore.cart.map(item => ({
-    khinkaliId: item.id,
-    quantity: item.quantity,
-  })),
-});
+  orderItemsList: computed(() =>
+    cartStore.cart.map(item => ({
+      khinkaliId: item.id,
+      quantity: item.quantity,
+    }))
+  ).value, // Преобразуем в массив
+};
 
 const timeOptions = computed(() => {
-  const times = [];
+  const times: string[] = [];
   for (let hour = 9; hour <= 21; hour++) {
     times.push(`${hour}:00`);
     if (hour < 21) times.push(`${hour}:30`);
@@ -171,23 +176,27 @@ const timeOptions = computed(() => {
   return times;
 });
 
-async function makeOrder() {
+async function makeOrder(): Promise<void> {
   try {
-    const response = await axios.post("http://localhost:8080/api/orders", order, {
+    const response = await axios.post('http://localhost:8080/api/orders', order, {
       headers: {
-        "Content-Type": "application/json"
-      }
+        'Content-Type': 'application/json',
+      },
     });
-    if (response.status == 201) {
+
+    if (response.status === 201) {
       cartStore.clearCart();
       const result = response.data;
       console.log(result);
     } else {
-      console.log('error: ' + response.status + '\n' + response.data);
+      console.log(`Error: ${response.status}\n${response.data}`);
     }
-
   } catch (error) {
-    console.error(`Ошибка HTTP: ${error.response?.status || error.message}`);
+    if (axios.isAxiosError(error)) {
+      console.error(`Ошибка HTTP: ${error.response?.status || error.message}`);
+    } else {
+      console.error('Неизвестная ошибка:', error);
+    }
   }
 }
 </script>

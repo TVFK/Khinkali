@@ -1,8 +1,16 @@
 import { defineStore } from 'pinia'
 import { reactive, ref, onMounted, watch } from 'vue'
 
+export interface CartItem {
+  id: number
+  title: string
+  price: number
+  quantity: number
+  image: string
+}
+
 export const useCartStore = defineStore('cartStore', () => {
-  const cart = reactive([])
+  const cart = reactive<CartItem[]>([])
   const totalAmount = ref(0)
 
   function clearCart() {
@@ -11,7 +19,7 @@ export const useCartStore = defineStore('cartStore', () => {
     saveToLocalStorage()
   }
 
-  function addCardToCart(card, quantity) {
+  function addCardToCart(card: CartItem, quantity: number) {
     const existingCard = cart.find((c) => c.id === card.id)
     if (existingCard) {
       existingCard.quantity += quantity
@@ -19,16 +27,16 @@ export const useCartStore = defineStore('cartStore', () => {
       cart.push({
         id: card.id,
         title: card.title,
-        price: card.newPrice,
+        price: card.price,
         quantity,
         image: card.image,
       })
     }
-    totalAmount.value += card.newPrice * quantity
+    totalAmount.value += card.price * quantity
     saveToLocalStorage()
   }
 
-  function removeCard(cardId) {
+  function removeCard(cardId: number) {
     const removingCard = cart.find((c) => c.id === cardId)
     if (!removingCard) {
       console.warn(`Card with ID ${cardId} not found.`)
@@ -39,7 +47,7 @@ export const useCartStore = defineStore('cartStore', () => {
     saveToLocalStorage()
   }
 
-  function updateCardQuantity(cardId, change) {
+  function updateCardQuantity(cardId: number, change: number) {
     const existingCard = cart.find((c) => c.id === cardId)
     if (!existingCard) {
       console.warn(`Card with ID ${cardId} not found.`)
@@ -69,7 +77,7 @@ export const useCartStore = defineStore('cartStore', () => {
   }
 
   function loadFromLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('cartStore'))
+    const data = JSON.parse(localStorage.getItem('cartStore') || 'null')
     if (data) {
       cart.splice(0, cart.length, ...data.cart)
       totalAmount.value = data.totalAmount

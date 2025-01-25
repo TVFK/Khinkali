@@ -35,11 +35,14 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAuthStore } from '@/stores/authStore';
 import { useCartStore } from '@/stores/cartStore';
 
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 
+const emit = defineEmits < {
+  (e: "toggle-cart"): void;
+}> ();
 </script>
